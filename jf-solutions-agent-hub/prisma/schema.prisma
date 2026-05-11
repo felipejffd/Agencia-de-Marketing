@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  clients   Client[]
+  sessions  Session[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Client {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName String
+  industry     String?
+  country      String?
+  email        String?
+  phone        String?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  projects     Project[]
+
+  @@index([userId])
+}
+
+model Project {
+  id               String            @id @default(cuid())
+  clientId         String
+  client           Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name             String
+  status           String            @default("draft")
+  agreement        Json
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  brief            Brief?
+  uploadedBrief    UploadedBrief?
+  agentResults     AgentResult[]
+  conversationLogs ConversationLog[]
+
+  @@index([clientId])
+}
+
+model Brief {
+  id            String   @id @default(cuid())
+  projectId     String   @unique
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  interviewData Json
+  pdfUrl        String?
+  generatedAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model UploadedBrief {
+  id         String   @id @default(cuid())
+  projectId  String   @unique
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fileUrl    String
+  uploadedAt DateTime @default(now())
+  content    String?
+}
+
+model AgentResult {
+  id           String    @id @default(cuid())
+  projectId    String
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  agentType    String
+  status       String    @default("pending")
+  content      String?
+  pdfUrl       String?
+  generatedAt  DateTime?
+  errorMessage String?
+
+  @@index([projectId])
+}
+
+model ConversationLog {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role      String
+  message   String
+  timestamp DateTime @default(now())
+
+  @@index([projectId])
+}
