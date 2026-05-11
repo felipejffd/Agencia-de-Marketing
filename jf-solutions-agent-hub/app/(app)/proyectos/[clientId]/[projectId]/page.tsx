@@ -24,7 +24,11 @@ export default async function ProyectoDetailPage({ params }: Props) {
 
   const project = await prisma.project.findFirst({
     where: { id: projectId, clientId, client: { userId: session.user.id } },
-    include: { client: { select: { businessName: true } } },
+    include: {
+      client: { select: { businessName: true } },
+      brief: true,
+      uploadedBrief: true,
+    },
   })
   if (!project) notFound()
 
@@ -38,6 +42,9 @@ export default async function ProyectoDetailPage({ params }: Props) {
   const moduleLabels = MODULE_OPTIONS.filter((m) => agreement.modules.includes(m.value)).map(
     (m) => m.label
   )
+
+  const hasBrief = !!project.brief?.interviewData
+  const hasUpload = !!project.uploadedBrief?.fileUrl
 
   return (
     <div className="max-w-3xl">
@@ -71,10 +78,12 @@ export default async function ProyectoDetailPage({ params }: Props) {
         className="border p-5 mb-6"
         style={{ borderColor: "#E5E4E0", backgroundColor: "#FAF9F6" }}
       >
-        <h2 className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: "#0E0E0E" }}>
+        <h2
+          className="text-xs font-semibold uppercase tracking-wide mb-4"
+          style={{ color: "#0E0E0E" }}
+        >
           Acuerdo
         </h2>
-
         <div className="space-y-4">
           <div>
             <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#8A8A8A" }}>
@@ -94,7 +103,10 @@ export default async function ProyectoDetailPage({ params }: Props) {
           </div>
 
           {(agreement.startDate || agreement.endDate || agreement.value !== undefined) && (
-            <div className="grid grid-cols-3 gap-4 pt-2 border-t" style={{ borderColor: "#E5E4E0" }}>
+            <div
+              className="grid grid-cols-3 gap-4 pt-2 border-t"
+              style={{ borderColor: "#E5E4E0" }}
+            >
               {agreement.startDate && (
                 <div>
                   <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "#8A8A8A" }}>
@@ -130,17 +142,129 @@ export default async function ProyectoDetailPage({ params }: Props) {
         </div>
       </section>
 
+      {/* Brief status */}
+      <section
+        className="border p-5 mb-6"
+        style={{ borderColor: "#E5E4E0", backgroundColor: "#FAF9F6" }}
+      >
+        <h2
+          className="text-xs font-semibold uppercase tracking-wide mb-4"
+          style={{ color: "#0E0E0E" }}
+        >
+          Estado del Brief
+        </h2>
+
+        <div className="space-y-3">
+          {/* Interview / generated brief */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm" style={{ color: "#0E0E0E" }}>
+                Brief generado por entrevista
+              </p>
+              {hasBrief && project.brief?.pdfUrl && (
+                <a
+                  href={project.brief.pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs"
+                  style={{ color: "#BD8130" }}
+                >
+                  Ver PDF ↗
+                </a>
+              )}
+            </div>
+            {hasBrief ? (
+              <Link
+                href={`/proyectos/${clientId}/${projectId}/brief`}
+                className="text-xs px-3 py-1.5 border font-medium"
+                style={{ borderColor: "#065F46", color: "#065F46" }}
+              >
+                ✓ Ver brief
+              </Link>
+            ) : (
+              <Link
+                href={`/proyectos/${clientId}/${projectId}/entrevista`}
+                className="text-xs px-3 py-1.5 border font-medium"
+                style={{ borderColor: "#BD8130", color: "#BD8130" }}
+              >
+                Completar entrevista
+              </Link>
+            )}
+          </div>
+
+          <div className="border-t" style={{ borderColor: "#E5E4E0" }} />
+
+          {/* Uploaded brief */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm" style={{ color: "#0E0E0E" }}>
+                Brief diligenciado (PDF)
+              </p>
+              {hasUpload && project.uploadedBrief?.uploadedAt && (
+                <p className="text-xs" style={{ color: "#8A8A8A" }}>
+                  Subido el{" "}
+                  {new Date(project.uploadedBrief.uploadedAt).toLocaleDateString("es-ES")}
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              {hasUpload && (
+                <a
+                  href={project.uploadedBrief!.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs px-3 py-1.5 border font-medium"
+                  style={{ borderColor: "#D1CFC9", color: "#4A4A4A" }}
+                >
+                  Ver ↗
+                </a>
+              )}
+              <Link
+                href={`/proyectos/${clientId}/${projectId}/subir`}
+                className="text-xs px-3 py-1.5 border font-medium"
+                style={
+                  hasUpload
+                    ? { borderColor: "#D1CFC9", color: "#6B6B6B" }
+                    : { borderColor: "#BD8130", color: "#BD8130" }
+                }
+              >
+                {hasUpload ? "Re-subir" : "Subir brief"}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Acciones */}
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#0E0E0E" }}>
+        <h2
+          className="text-xs font-semibold uppercase tracking-wide mb-3"
+          style={{ color: "#0E0E0E" }}
+        >
           Acciones del proyecto
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            { label: "Entrevista", href: `/proyectos/${clientId}/${projectId}/entrevista`, description: "Iniciar entrevista con el agente" },
-            { label: "Generar brief", href: `/proyectos/${clientId}/${projectId}/brief`, description: "Generar brief con IA" },
-            { label: "Subir brief", href: `/proyectos/${clientId}/${projectId}/subir-brief`, description: "Subir brief en PDF" },
-            { label: "Ver resultados", href: `/proyectos/${clientId}/${projectId}/resultados`, description: "Ver outputs de los agentes" },
+            {
+              label: "Entrevista",
+              href: `/proyectos/${clientId}/${projectId}/entrevista`,
+              description: "Iniciar entrevista con el agente",
+            },
+            {
+              label: "Ver Brief",
+              href: `/proyectos/${clientId}/${projectId}/brief`,
+              description: "Brief generado con IA",
+            },
+            {
+              label: "Subir Brief",
+              href: `/proyectos/${clientId}/${projectId}/subir`,
+              description: "Subir brief diligenciado en PDF",
+            },
+            {
+              label: "Resultados",
+              href: `/proyectos/${clientId}/${projectId}/resultados`,
+              description: "Ver outputs de los agentes",
+            },
           ].map((action) => (
             <Link
               key={action.label}
