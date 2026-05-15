@@ -37,7 +37,7 @@ export default async function ResultadosPage({ params }: Props) {
   // Get latest result per agent type
   const latestResultByType = project.agentResults.reduce<
     Record<string, (typeof project.agentResults)[0]>
-  >((acc, r) => {
+  >((acc: Record<string, (typeof project.agentResults)[0]>, r) => {
     if (!acc[r.agentType]) acc[r.agentType] = r
     return acc
   }, {})
