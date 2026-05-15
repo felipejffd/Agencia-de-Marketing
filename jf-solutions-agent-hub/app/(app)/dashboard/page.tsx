@@ -181,7 +181,7 @@ export default async function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {recentProjects.map((project, i) => {
+                {recentProjects.map((project: typeof recentProjects[0], i) => {
                   const sc = STATUS_COLORS[project.status] ?? STATUS_COLORS.draft
                   return (
                     <tr
