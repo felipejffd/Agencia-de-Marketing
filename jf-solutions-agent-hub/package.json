@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "DATABASE_URL=${DATABASE_URL:-file:./dev.db} prisma generate && next build",
+    "postinstall": "DATABASE_URL=${DATABASE_URL:-file:./dev.db} prisma generate || true",
     "start": "next start",
     "lint": "eslint"
   },
