@@ -61,7 +61,7 @@ export default async function ProyectosClientePage({ params }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((p) => (
+          {projects.map((p: typeof projects[0]) => (
             <ProjectCard
               key={p.id}
               id={p.id}

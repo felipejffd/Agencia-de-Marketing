@@ -147,7 +147,7 @@ export default function EntrevistaPage({ params }: Props) {
           </div>
         )}
 
-        {messages.map((msg, i) => (
+        {messages.map((msg: Message, i: number) => (
           <div
             key={i}
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}

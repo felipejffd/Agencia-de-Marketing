@@ -77,7 +77,7 @@ export default async function BriefPage({ params }: Props) {
               { key: "tone", label: "Tono de comunicación" },
               { key: "competitors", label: "Competidores" },
               { key: "additionalNotes", label: "Notas adicionales" },
-            ].map(({ key, label }) =>
+            ].map(({ key, label }: { key: string; label: string }) =>
               interviewData[key] ? (
                 <div key={key}>
                   <p

@@ -39,8 +39,8 @@ export default async function ProyectoDetailPage({ params }: Props) {
     value?: number
   }
 
-  const moduleLabels = MODULE_OPTIONS.filter((m) => agreement.modules.includes(m.value)).map(
-    (m) => m.label
+  const moduleLabels = MODULE_OPTIONS.filter((m: typeof MODULE_OPTIONS[0]) => agreement.modules.includes(m.value)).map(
+    (m: typeof MODULE_OPTIONS[0]) => m.label
   )
 
   const hasBrief = !!project.brief?.interviewData
@@ -90,7 +90,7 @@ export default async function ProyectoDetailPage({ params }: Props) {
               Módulos contratados
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {moduleLabels.map((label) => (
+              {moduleLabels.map((label: string) => (
                 <span
                   key={label}
                   className="text-xs px-2 py-0.5 border"
@@ -265,7 +265,7 @@ export default async function ProyectoDetailPage({ params }: Props) {
               href: `/proyectos/${clientId}/${projectId}/resultados`,
               description: "Ver outputs de los agentes",
             },
-          ].map((action) => (
+          ].map((action: { label: string; href: string; description: string }) => (
             <Link
               key={action.label}
               href={action.href}

@@ -108,7 +108,7 @@ export default async function DashboardPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-4 mb-8 lg:grid-cols-4">
-        {stats.map((stat) => (
+        {stats.map((stat: typeof stats[0]) => (
           <div
             key={stat.label}
             className="border p-5"
@@ -170,7 +170,7 @@ export default async function DashboardPage() {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr style={{ backgroundColor: "#0E0E0E", color: "#FAF9F6" }}>
-                  {["Proyecto", "Cliente", "Estado", "Fecha"].map((h) => (
+                  {["Proyecto", "Cliente", "Estado", "Fecha"].map((h: string) => (
                     <th
                       key={h}
                       className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"

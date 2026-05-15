@@ -77,7 +77,7 @@ export default async function ResultadosPage({ params }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {activeModules.map((mod) => {
+          {activeModules.map((mod: typeof MODULE_OPTIONS[0]) => {
             const latest = latestResultByType[mod.value] ?? null
             return (
               <AgentPanel
