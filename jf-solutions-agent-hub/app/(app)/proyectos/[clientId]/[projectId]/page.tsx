@@ -39,8 +39,8 @@ export default async function ProyectoDetailPage({ params }: Props) {
     value?: number
   }
 
-  const moduleLabels = MODULE_OPTIONS.filter((m: typeof MODULE_OPTIONS[0]) => agreement.modules.includes(m.value)).map(
-    (m: typeof MODULE_OPTIONS[0]) => m.label
+  const moduleLabels = MODULE_OPTIONS.filter((m) => agreement.modules.includes(m.value)).map(
+    (m) => m.label
   )
 
   const hasBrief = !!project.brief?.interviewData
